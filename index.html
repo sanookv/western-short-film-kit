@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Western Short Film Studio — AI Cinema 9:16 (Thai Dialogue)</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%3E<text y=%2226%22 font-size=%2224%22>🎬</text></svg>">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🎬</div>
+        <div>
+          <div class="brand-title">Western Film Kit</div>
+          <div class="brand-subtitle">Cinema Studio UI</div>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <a class="nav-item active" data-view="storyboard" id="nav-storyboard">
+          <span class="nav-icon">🎞️</span>
+          <span>Storyboard 9:16</span>
+          <span class="nav-badge">6 ช็อต</span>
+        </a>
+        <a class="nav-item" data-view="brief" id="nav-brief">
+          <span class="nav-icon">📋</span>
+          <span>Project Brief</span>
+        </a>
+        <a class="nav-item" data-view="bible" id="nav-bible">
+          <span class="nav-icon">🎭</span>
+          <span>Character Bible</span>
+        </a>
+        <a class="nav-item" data-view="repair" id="nav-repair">
+          <span class="nav-icon">🛠️</span>
+          <span>QC & Repair Studio</span>
+        </a>
+        <a class="nav-item" data-view="checklist" id="nav-checklist">
+          <span class="nav-icon">✅</span>
+          <span>QC Checklist & Log</span>
+        </a>
+        <a class="nav-item" data-view="guide" id="nav-guide">
+          <span class="nav-icon">📖</span>
+          <span>คู่มือ Google Flow</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="https://labs.google/fx/tools/flow" target="_blank" rel="noopener noreferrer" class="btn-flow-link" id="link-google-flow">
+          <span>⚡ เปิด Google Flow</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <main class="main-wrapper">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="project-selector-wrapper">
+          <select id="project-select" class="project-select">
+            <!-- Populated via JavaScript -->
+          </select>
+          <div class="project-tags">
+            <span class="tag tag-amber" id="tag-aspect">9:16 Vertical</span>
+            <span class="tag" id="tag-duration">48 วินาที</span>
+            <span class="tag tag-green" id="tag-shots">6 ช็อต × 8s</span>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-secondary" id="btn-play-demo">
+            <span>▶ ดูคลิปตัวอย่างจริง</span>
+          </button>
+          <button class="btn btn-primary" id="btn-copy-all-prompts">
+            <span>📋 คัดลอก Prompt ครบ 6 ช็อต</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- View: Storyboard 9:16 -->
+      <section class="view-container active" id="view-storyboard">
+        <div class="studio-layout">
+          <div>
+            <div class="timeline-header">
+              <div>
+                <h1 class="view-title" id="storyboard-project-title">One Floor Below — ชั้นที่ไม่มีอยู่</h1>
+                <p class="view-subtitle" id="storyboard-project-logline">หญิงสาวกลับจากงานดึก ลิฟต์พาเธอไปชั้นที่ไม่รู้จัก พร้อมเสียงผิวปากของพ่อที่เสียไปสิบปีแล้ว</p>
+              </div>
+            </div>
+
+            <!-- 6-Shot Grid -->
+            <div class="shots-grid" id="shots-grid-container">
+              <!-- Rendered via JavaScript -->
+            </div>
+          </div>
+
+          <!-- Continuity & Character Quick Inspector -->
+          <aside class="inspector-card">
+            <div class="inspector-title">
+              <span>🎭 Character & Continuity</span>
+              <span class="tag tag-amber" id="inspector-char-id">E01</span>
+            </div>
+
+            <div class="ref-image-wrapper">
+              <img src="assets/hero.png" alt="Character Reference Concept" id="inspector-ref-img">
+            </div>
+
+            <div>
+              <div style="font-size: 13.5px; font-weight: 700; color: #fff; margin-bottom: 4px;" id="inspector-char-name">Ella Ward</div>
+              <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.4;" id="inspector-char-appearance">
+                อายุ 32 ผิวขาวมีกระ ผมบ็อบน้ำตาลเข้ม เสื้อโค้ทขนสัตว์สีกรมท่า สเวตเตอร์ครีม สร้อยเงินเส้นบาง
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-color); padding-top: 14px;">
+              <div style="font-size: 11.5px; font-weight: 700; color: var(--accent-gold); text-transform: uppercase; margin-bottom: 8px;">
+                🔒 กฎความต่อเนื่อง (Continuity)
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px;" id="inspector-continuity-list">
+                <!-- Populated via JavaScript -->
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- View: Project Brief -->
+      <section class="view-container" id="view-brief">
+        <div class="timeline-header">
+          <div>
+            <h1 class="view-title">Project Brief & Concept</h1>
+            <p class="view-subtitle">กำหนดพล็อตเรื่อง โครงสร้าง Hook และจุดหักมุมสำหรับสร้างหนังสั้น 9:16</p>
+          </div>
+          <button class="btn btn-primary" id="btn-save-brief">💾 บันทึกบรีฟ</button>
+        </div>
+
+        <div class="form-card">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label">ชื่อเรื่อง (Project Title) <span class="req">*</span></label>
+              <input type="text" id="brief-title" class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">แนวเรื่อง (Genre) <span class="req">*</span></label>
+              <input type="text" id="brief-genre" class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">ความยาวและจำนวนช็อต</label>
+              <input type="text" value="48 วินาที (6 ช็อต × 8 วินาที, สัดส่วน 9:16)" class="form-input" readonly>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Logline / เรื่องย่อใน 1 บรรทัด <span class="req">*</span></label>
+              <textarea id="brief-logline" class="form-textarea"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">สถานที่และบรรยากาศหลัก (Setting & Atmosphere)</label>
+              <textarea id="brief-setting" class="form-textarea"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Hook & ลำดับเหตุการณ์สู่จุดหักมุม</label>
+              <textarea id="brief-hook" class="form-textarea"></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Character Bible -->
+      <section class="view-container" id="view-bible">
+        <div class="timeline-header">
+          <div>
+            <h1 class="view-title">Character & Scene Bible</h1>
+            <p class="view-subtitle">ล็อกรายละเอียดตัวละคร ฉาก และพร็อพ พร้อม Prompt ภาพอ้างอิงสำหรับใช้ข้ามช็อต</p>
+          </div>
+          <button class="btn btn-primary" id="btn-save-bible">💾 บันทึกข้อมูล</button>
+        </div>
+
+        <div class="form-card">
+          <h2 style="font-size: 16px; margin-bottom: 16px; color: var(--accent-amber-light);">🎭 ตัวละครหลัก (Character Reference E01)</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">ชื่อและรหัสตัวละคร</label>
+              <input type="text" id="char-name" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">อายุ</label>
+              <input type="text" id="char-age" class="form-input">
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">รูปลักษณ์ ใบหน้า ทรงผม และเสื้อผ้า (ล็อกให้คงที่ทุกช็อต)</label>
+              <textarea id="char-appearance" class="form-textarea"></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">ลักษณะเสียง (ต้องพูดภาษาไทยมาตรฐาน)</label>
+              <input type="text" id="char-voice" class="form-input">
+            </div>
+            <div class="form-group full-width">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label class="form-label">Prompt เจนภาพตัวละครเดี่ยว (Character Reference Prompt)</label>
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" id="btn-copy-char-prompt">📋 คัดลอก Prompt</button>
+              </div>
+              <div class="code-box" id="code-char-prompt"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <h2 style="font-size: 16px; margin-bottom: 16px; color: var(--accent-gold);">🏢 ฉากและพร็อพ (Scene & Prop References)</h2>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label class="form-label">Prompt ฉากว่าง (L01 Scene Reference Prompt — 9:16)</label>
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" id="btn-copy-scene-prompt">📋 คัดลอก Prompt</button>
+              </div>
+              <div class="code-box" id="code-scene-prompt"></div>
+            </div>
+            <div class="form-group full-width">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label class="form-label">Prompt พร็อพประจำตัว (P01 Prop Reference Prompt)</label>
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" id="btn-copy-prop-prompt">📋 คัดลอก Prompt</button>
+              </div>
+              <div class="code-box" id="code-prop-prompt"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: QC & Repair Studio -->
+      <section class="view-container" id="view-repair">
+        <div class="timeline-header">
+          <div>
+            <h1 class="view-title">QC & Repair Studio</h1>
+            <p class="view-subtitle">เครื่องมือช่วยแก้เฉพาะช็อตที่มีปัญหาตามหลักการ <a href="prompts/REPAIR.md" style="color: var(--accent-amber);">REPAIR.md</a> โดยไม่แตะต้องช็อตที่ผ่านแล้ว</p>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">เลือกช็อตที่มีปัญหา <span class="req">*</span></label>
+              <select id="repair-shot-select" class="form-select">
+                <option value="S01">Shot S01 (00:00–00:08)</option>
+                <option value="S02">Shot S02 (00:08–00:16)</option>
+                <option value="S03">Shot S03 (00:16–00:24)</option>
+                <option value="S04">Shot S04 (00:24–00:32)</option>
+                <option value="S05">Shot S05 (00:32–00:40)</option>
+                <option value="S06">Shot S06 (00:40–00:48)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">ประเภทของปัญหาที่พบ <span class="req">*</span></label>
+              <select id="repair-preset-select" class="form-select">
+                <!-- Populated via JavaScript -->
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">คำแนะนำการแก้ปัญหาทางเทคนิค</label>
+              <div id="repair-guide-box" style="padding: 12px; background: rgba(245, 158, 11, 0.08); border-left: 3px solid var(--accent-amber); font-size: 12.5px; color: var(--text-secondary); border-radius: 4px;"></div>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">อธิบายสิ่งที่เห็นหรือได้ยินจริงในคลิปที่มีปัญหา</label>
+              <textarea id="repair-detail-input" class="form-textarea" placeholder="เช่น ในวินาทีที่ 4 หน้าตัวละครเปลี่ยนไปเป็นคนเอเชีย และเสื้อแจ็กเก็ตกลายเป็นสีดำ..."></textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <button class="btn btn-primary" id="btn-generate-repair">
+                <span>⚡ สร้างคำสั่งซ่อมงาน (Generate Repair Prompt)</span>
+              </button>
+            </div>
+
+            <div class="form-group full-width" id="repair-result-container" style="display: none; margin-top: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label class="form-label" style="color: var(--accent-emerald);">✅ คำสั่งซ่อมพร้อมส่ง AI (Copy-Ready Repair Prompt)</label>
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" id="btn-copy-repair-output">📋 คัดลอกคำสั่งซ่อม</button>
+              </div>
+              <div class="code-box" id="repair-result-box" style="color: #6ee7b7;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: QC Checklist & Shot Log -->
+      <section class="view-container" id="view-checklist">
+        <div class="timeline-header">
+          <div>
+            <h1 class="view-title">QC Checklist & Production Log</h1>
+            <p class="view-subtitle">เกณฑ์ตรวจสอบคุณภาพ 8 ข้อก่อนนำไปตัดต่อจริงตาม <a href="WORKFLOW.md" style="color: var(--accent-amber);">WORKFLOW.md</a></p>
+          </div>
+          <button class="btn btn-secondary" id="btn-reset-checklist">🔄 ล้างสถานะทั้งหมด</button>
+        </div>
+
+        <div class="form-card">
+          <h2 style="font-size: 16px; margin-bottom: 16px; color: var(--accent-amber-light);">📋 รายการตรวจสอบคุณภาพ 8 ข้อ (Quality Control)</h2>
+          <div style="display: flex; flex-direction: column; gap: 12px;" id="checklist-items-container">
+            <!-- Populated via JavaScript -->
+          </div>
+        </div>
+
+        <div class="form-card">
+          <h2 style="font-size: 16px; margin-bottom: 16px; color: var(--accent-gold);">📊 ตารางบันทึกสถานะการผลิตแต่ละช็อต (Shot Production Log)</h2>
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px;" id="shot-log-table">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border-color); text-align: left; color: var(--text-secondary);">
+                <th style="padding: 10px;">ช็อต</th>
+                <th style="padding: 10px;">Timecode</th>
+                <th style="padding: 10px;">มุมกล้อง</th>
+                <th style="padding: 10px;">บทพูดภาษาไทย</th>
+                <th style="padding: 10px;">สถานะ</th>
+                <th style="padding: 10px;">หมายเหตุ</th>
+              </tr>
+            </thead>
+            <tbody id="shot-log-tbody">
+              <!-- Populated via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View: Google Flow Guide -->
+      <section class="view-container" id="view-guide">
+        <div class="timeline-header">
+          <div>
+            <h1 class="view-title">คู่มือการตั้งค่า Google Flow & การตัดต่อ</h1>
+            <p class="view-subtitle">แนวทางปฏิบัติที่ดีที่สุดในการใช้ Google Flow เจนหนังสั้นแนวตั้ง 9:16 ให้ได้งานคมชัด</p>
+          </div>
+        </div>
+
+        <div class="form-card" style="line-height: 1.7; font-size: 13.5px; color: var(--text-secondary);">
+          <h2 style="font-size: 17px; color: #fff; margin-bottom: 12px;">⚙️ การตั้งค่าที่แนะนำใน Google Flow</h2>
+          <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+            <li><strong>Aspect Ratio:</strong> เลือก <code>9:16</code> (แนวตั้งสำหรับมือถือ / TikTok / Reels / Shorts)</li>
+            <li><strong>Duration:</strong> เลือก <code>8 วินาที</code> ต่อหนึ่งช็อต</li>
+            <li><strong>Outputs:</strong> ตั้งเป็น <code>1 ผลลัพธ์</code> เพื่อประหยัดเครดิตและตรวจสอบทีละผลลัพธ์</li>
+            <li><strong>Reference Images:</strong> อัปโหลดรูปภาพ <code>E01</code> (ตัวละคร) และ <code>L01</code> (ฉาก) ลงในช่อง Image Reference เมื่อโมเดลรองรับ</li>
+            <li><strong>ห้ามแปลบทพูดเป็นอังกฤษ:</strong> ใน Prompt ต้องคงตัวอักษรภาษาไทยไว้ตรงตัว เช่น <code>"ฉันจำทำนองนั้นได้"</code> และระบุ <code>Only Ella speaks, in Thai</code> เสมอ</li>
+          </ul>
+
+          <h2 style="font-size: 17px; color: #fff; margin-top: 24px; margin-bottom: 12px;">✂️ การตัดต่อ ประกอบเสียง และทำซับไตเติล</h2>
+          <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+            <li>ตั้ง Timeline ในโปรแกรมตัดต่อ (CapCut / Premiere / DaVinci) เป็น <strong>1080×1920 (Vertical 9:16)</strong></li>
+            <li>อย่าวางซับไตเติลชิดขอบล่างเกินไป ให้เว้นระยะ Safe Zone สำหรับ UI ปุ่ม Like/Comment ของแพลตฟอร์ม</li>
+            <li>ใช้เสียงผิวปากเดียวกันทั้งในช็อต S01 และ S06 เพื่อความต่อเนื่องของเสียงบรรยากาศ</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Video Player Modal -->
+  <div class="modal-overlay" id="video-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="video-modal-title">▶ พรีวิวคลิปวิดีโอตัวอย่างจริง (One Floor Below - 8s)</div>
+        <button class="modal-close" id="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <video id="modal-video-player" class="modal-video" controls playsinline>
+          <source src="assets/demo.mp4" type="video/mp4">
+          เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ MP4
+        </video>
+        <div style="margin-top: 14px; font-size: 12px; color: var(--text-secondary); text-align: center; line-height: 1.4;">
+          คลิปทดลองจริงจาก Google Flow • Ella พูดไทย: “ฉันจำทำนองนั้นได้” • 9:16 • 8 วินาที
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

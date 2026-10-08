@@ -1,0 +1,19 @@
+{
+  "name": "western-short-film-studio",
+  "version": "1.0.0",
+  "description": "Studio UI for Western Short Film Kit - 9:16 Vertical AI Cinema in Thai",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "ai-film",
+    "western-short-film",
+    "google-flow",
+    "prompts",
+    "thai-dialogue"
+  ],
+  "author": "Western Short Film Kit",
+  "license": "MIT"
+}
