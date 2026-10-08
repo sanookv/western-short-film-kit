@@ -43,7 +43,8 @@
         </a>
         <a class="nav-item" data-view="guide" id="nav-guide">
           <span class="nav-icon">📖</span>
-          <span>คู่มือ Google Flow</span>
+          <span>คู่มือการใช้งาน & Flow</span>
+          <span class="nav-badge" style="background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald);">7 ขั้นตอน</span>
         </a>
       </nav>
 
@@ -326,31 +327,56 @@
         </div>
       </section>
 
-      <!-- View: Google Flow Guide -->
+      <!-- View: Complete User Guide & Google Flow Master -->
       <section class="view-container" id="view-guide">
-        <div class="timeline-header">
-          <div>
-            <h1 class="view-title">คู่มือการตั้งค่า Google Flow & การตัดต่อ</h1>
-            <p class="view-subtitle">แนวทางปฏิบัติที่ดีที่สุดในการใช้ Google Flow เจนหนังสั้นแนวตั้ง 9:16 ให้ได้งานคมชัด</p>
+        <div class="guide-layout">
+          <!-- Guide Hero Banner -->
+          <div class="guide-hero">
+            <div class="guide-hero-top">
+              <div>
+                <h1 class="guide-hero-title">
+                  <span>📖</span> คู่มือสร้างหนังสั้น AI แนวตั้ง 9:16 ฉบับสมบูรณ์
+                </h1>
+                <p class="guide-hero-subtitle">
+                  อธิบายขั้นตอนการทำงานตั้งแต่เริ่มต้นไอเดียแรกจนได้ไฟล์วิดีโอสมบูรณ์พร้อมฉายบนมือถือ แบ่งเป็น 7 ขั้นตอนหลัก ภาษาเข้าใจง่าย ทำตามได้ทันที พร้อมคู่มือการตั้งค่า Google Flow อย่างละเอียด
+                </p>
+                <div class="guide-hero-badges">
+                  <span class="guide-badge primary">✨ ครบวงจร 7 ขั้นตอน</span>
+                  <span class="guide-badge emerald">⚡ รวมคู่มือ Google Flow</span>
+                  <span class="guide-badge">📱 สัดส่วน 9:16 (48 วินาที)</span>
+                  <span class="guide-badge">🇹🇭 บทพูดภาษาไทยมาตรฐาน</span>
+                  <span class="guide-badge">🎯 มือใหม่ทำตามได้ทันที</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div class="form-card" style="line-height: 1.7; font-size: 13.5px; color: var(--text-secondary);">
-          <h2 style="font-size: 17px; color: #fff; margin-bottom: 12px;">⚙️ การตั้งค่าที่แนะนำใน Google Flow</h2>
-          <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
-            <li><strong>Aspect Ratio:</strong> เลือก <code>9:16</code> (แนวตั้งสำหรับมือถือ / TikTok / Reels / Shorts)</li>
-            <li><strong>Duration:</strong> เลือก <code>8 วินาที</code> ต่อหนึ่งช็อต</li>
-            <li><strong>Outputs:</strong> ตั้งเป็น <code>1 ผลลัพธ์</code> เพื่อประหยัดเครดิตและตรวจสอบทีละผลลัพธ์</li>
-            <li><strong>Reference Images:</strong> อัปโหลดรูปภาพ <code>E01</code> (ตัวละคร) และ <code>L01</code> (ฉาก) ลงในช่อง Image Reference เมื่อโมเดลรองรับ</li>
-            <li><strong>ห้ามแปลบทพูดเป็นอังกฤษ:</strong> ใน Prompt ต้องคงตัวอักษรภาษาไทยไว้ตรงตัว เช่น <code>"ฉันจำทำนองนั้นได้"</code> และระบุ <code>Only Ella speaks, in Thai</code> เสมอ</li>
-          </ul>
+          <!-- Search and Toolbar -->
+          <div class="guide-toolbar">
+            <div class="guide-search-wrapper">
+              <span class="guide-search-icon">🔍</span>
+              <input type="text" id="guide-search-input" class="guide-search-input" placeholder="ค้นหาหัวข้อในคู่มือ (เช่น Google Flow, ซับ, Prompt, เครดิต, เสียง)...">
+            </div>
 
-          <h2 style="font-size: 17px; color: #fff; margin-top: 24px; margin-bottom: 12px;">✂️ การตัดต่อ ประกอบเสียง และทำซับไตเติล</h2>
-          <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
-            <li>ตั้ง Timeline ในโปรแกรมตัดต่อ (CapCut / Premiere / DaVinci) เป็น <strong>1080×1920 (Vertical 9:16)</strong></li>
-            <li>อย่าวางซับไตเติลชิดขอบล่างเกินไป ให้เว้นระยะ Safe Zone สำหรับ UI ปุ่ม Like/Comment ของแพลตฟอร์ม</li>
-            <li>ใช้เสียงผิวปากเดียวกันทั้งในช็อต S01 และ S06 เพื่อความต่อเนื่องของเสียงบรรยากาศ</li>
-          </ul>
+            <div class="guide-toolbar-actions">
+              <button class="btn btn-secondary" id="btn-guide-expand-all" style="padding: 6px 12px; font-size: 12px;">
+                <span>📂 เปิดทุกหัวข้อย่อย</span>
+              </button>
+              <button class="btn btn-secondary" id="btn-guide-collapse-all" style="padding: 6px 12px; font-size: 12px;">
+                <span>📁 ย่อทั้งหมด</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Horizontal Stepper Track -->
+          <div class="guide-stepper" id="guide-stepper-track">
+            <!-- Populated via JavaScript -->
+          </div>
+
+          <!-- Active Step View Container -->
+          <div id="guide-step-render-box">
+            <!-- Populated via JavaScript -->
+          </div>
         </div>
       </section>
     </main>

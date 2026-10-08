@@ -442,6 +442,384 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === videoModal) closeVideoModal();
   });
 
+  // ==========================================
+  // Interactive Production Guide & Flow Hub
+  // ==========================================
+  let activeGuideStepIndex = 0;
+  const guideStepperTrack = document.getElementById('guide-stepper-track');
+  const guideStepRenderBox = document.getElementById('guide-step-render-box');
+  const guideSearchInput = document.getElementById('guide-search-input');
+  const btnGuideExpandAll = document.getElementById('btn-guide-expand-all');
+  const btnGuideCollapseAll = document.getElementById('btn-guide-collapse-all');
+
+  function initGuideView() {
+    if (!guideStepperTrack || !guideStepRenderBox || typeof PRODUCTION_GUIDE === 'undefined') return;
+
+    renderGuideStepper();
+    renderGuideCurrentStep();
+
+    // Search Filtering
+    guideSearchInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      if (q === '') {
+        renderGuideCurrentStep();
+      } else {
+        renderGuideSearchResults(q);
+      }
+    });
+
+    // Expand / Collapse All
+    btnGuideExpandAll.addEventListener('click', () => {
+      document.querySelectorAll('.guide-topic-card').forEach(card => card.classList.add('open'));
+    });
+
+    btnGuideCollapseAll.addEventListener('click', () => {
+      document.querySelectorAll('.guide-topic-card').forEach(card => card.classList.remove('open'));
+    });
+  }
+
+  function renderGuideStepper() {
+    guideStepperTrack.innerHTML = '';
+    PRODUCTION_GUIDE.forEach((step, idx) => {
+      const tab = document.createElement('button');
+      tab.className = `guide-step-tab ${idx === activeGuideStepIndex ? 'active' : ''}`;
+      tab.id = `guide-tab-${step.stepId}`;
+      tab.innerHTML = `
+        <span class="tab-num">${step.stepNumber}</span>
+        <span>${step.icon} ${step.shortTitle}</span>
+      `;
+      tab.addEventListener('click', () => {
+        activeGuideStepIndex = idx;
+        guideSearchInput.value = '';
+        renderGuideStepper();
+        renderGuideCurrentStep();
+      });
+      guideStepperTrack.appendChild(tab);
+    });
+  }
+
+  function renderGuideCurrentStep() {
+    const step = PRODUCTION_GUIDE[activeGuideStepIndex];
+    if (!step) return;
+
+    let studioActionBtn = '';
+    if (step.studioLink) {
+      if (step.studioLink.url) {
+        studioActionBtn = `
+          <a href="${step.studioLink.url}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: 12.5px; padding: 7px 14px;">
+            <span>⚡ ${step.studioLink.label}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
+        `;
+      } else if (step.studioLink.view) {
+        studioActionBtn = `
+          <button class="btn btn-secondary guide-goto-view-btn" data-target-view="${step.studioLink.view}" style="font-size: 12.5px; padding: 7px 14px;">
+            <span>↗ ${step.studioLink.label}</span>
+          </button>
+        `;
+      }
+    }
+
+    let flowSpecialHub = '';
+    if (step.stepId === 'step-4') {
+      flowSpecialHub = `
+        <div class="flow-hub-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <div style="font-size: 15px; font-weight: 700; color: #fff;">⚙️ แดชบอร์ดสรุปสเปกสำหรับ Google Flow (Veo Studio)</div>
+              <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 2px;">ตรวจเช็กพารามิเตอร์ 4 ตัวนี้ในหน้าตั้งค่าของ Flow ก่อนกดสร้างเสมอ</div>
+            </div>
+            <a href="https://labs.google/fx/tools/flow" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="padding: 6px 14px; font-size: 12px;">
+              <span>⚡ เปิด Google Flow ทันที</span>
+            </a>
+          </div>
+
+          <div class="flow-specs-grid">
+            <div class="flow-spec-item">
+              <div class="flow-spec-label">สัดส่วนหน้าจอ (Aspect Ratio)</div>
+              <div class="flow-spec-val" style="color: var(--accent-amber);">9:16 Vertical</div>
+            </div>
+            <div class="flow-spec-item">
+              <div class="flow-spec-label">ความยาวคลิป (Duration)</div>
+              <div class="flow-spec-val" style="color: var(--accent-gold);">8 วินาที (8s)</div>
+            </div>
+            <div class="flow-spec-item">
+              <div class="flow-spec-label">จำนวนผลลัพธ์ (Outputs)</div>
+              <div class="flow-spec-val" style="color: var(--accent-emerald);">1 ผลลัพธ์ (คุมเครดิต)</div>
+            </div>
+            <div class="flow-spec-item">
+              <div class="flow-spec-label">โมเดลที่แนะนำ (Recommended Model)</div>
+              <div class="flow-spec-val" style="color: var(--accent-blue);">Veo 3.1 Lite / Fast</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    let topicsHtml = step.topics.map((topic, tIdx) => {
+      const stepsHtml = topic.steps.map(s => `
+        <div class="guide-step-item">
+          <span class="guide-step-item-bullet">›</span>
+          <span>${s}</span>
+        </div>
+      `).join('');
+
+      const proTipHtml = topic.proTip ? `
+        <div class="guide-callout tip">
+          <span style="font-size: 16px;">💡</span>
+          <div><strong>เคล็ดลับมือโปร:</strong> ${topic.proTip}</div>
+        </div>
+      ` : '';
+
+      const cautionHtml = topic.caution ? `
+        <div class="guide-callout caution">
+          <span style="font-size: 16px;">⚠️</span>
+          <div><strong>ข้อควรระวัง:</strong> ${topic.caution}</div>
+        </div>
+      ` : '';
+
+      let snippetHtml = '';
+      if (topic.copyableSnippet) {
+        snippetHtml = `
+          <div style="margin-top: 6px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 12px; font-weight: 600; color: var(--accent-emerald);">${topic.snippetLabel || 'ตัวอย่างคำสั่ง'}</span>
+              <button class="btn btn-secondary guide-copy-snippet-btn" data-snippet="${encodeURIComponent(topic.copyableSnippet)}" style="padding: 3px 10px; font-size: 11px;">
+                📋 คัดลอก Prompt
+              </button>
+            </div>
+            <div class="guide-code-box">${topic.copyableSnippet}</div>
+          </div>
+        `;
+      }
+
+      // Default first topic open
+      const isOpen = tIdx === 0 ? 'open' : '';
+
+      return `
+        <div class="guide-topic-card ${isOpen}" id="${topic.id}">
+          <div class="guide-topic-header">
+            <div class="guide-topic-title">
+              <span>📌</span>
+              <span>${topic.title}</span>
+            </div>
+            <div class="guide-topic-chevron">▼</div>
+          </div>
+          <div class="guide-topic-body">
+            <div class="guide-topic-desc">${topic.description}</div>
+            <div class="guide-steps-list">${stepsHtml}</div>
+            ${proTipHtml}
+            ${cautionHtml}
+            ${snippetHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const prevDisabled = activeGuideStepIndex === 0 ? 'disabled style="opacity: 0.5; pointer-events: none;"' : '';
+    const nextDisabled = activeGuideStepIndex === PRODUCTION_GUIDE.length - 1 ? 'disabled style="opacity: 0.5; pointer-events: none;"' : '';
+
+    guideStepRenderBox.innerHTML = `
+      <div class="guide-step-view">
+        <div class="guide-step-header">
+          <div class="guide-step-title-wrap">
+            <div class="guide-step-icon-box">${step.icon}</div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="tag tag-amber">${step.category}</span>
+                <span style="font-size: 11px; color: var(--text-muted);">ขั้นตอน ${step.stepNumber} จาก 7</span>
+              </div>
+              <h2 class="guide-step-heading">${step.title}</h2>
+              <p class="guide-step-summary">${step.summary}</p>
+            </div>
+          </div>
+          <div>${studioActionBtn}</div>
+        </div>
+
+        ${flowSpecialHub}
+
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="font-size: 13px; font-weight: 700; color: var(--accent-gold); text-transform: uppercase;">
+              📖 หัวข้อย่อยและรายละเอียดที่ต้องทำ (${step.topics.length} หัวข้อ)
+            </div>
+            <span style="font-size: 11px; color: var(--text-muted);">คลิกที่แถบหัวข้อเพื่อเปิด/ปิดดูคำอธิบาย</span>
+          </div>
+
+          <div class="guide-topics-list">
+            ${topicsHtml}
+          </div>
+        </div>
+
+        <div class="guide-step-footer">
+          <button class="btn btn-secondary" id="btn-guide-prev-step" ${prevDisabled}>
+            <span>← ขั้นตอนก่อนหน้า</span>
+          </button>
+          <div style="font-size: 12px; color: var(--text-secondary);">
+            ขั้นตอนที่ ${step.stepNumber} / 7
+          </div>
+          <button class="btn btn-primary" id="btn-guide-next-step" ${nextDisabled}>
+            <span>ขั้นตอนถัดไป →</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    attachGuideInteractions();
+  }
+
+  function renderGuideSearchResults(query) {
+    let matchedTopics = [];
+    PRODUCTION_GUIDE.forEach(step => {
+      step.topics.forEach(topic => {
+        const fullContent = (topic.title + ' ' + topic.description + ' ' + topic.steps.join(' ') + ' ' + (topic.proTip || '') + ' ' + (topic.caution || '')).toLowerCase();
+        if (fullContent.includes(query)) {
+          matchedTopics.push({ step, topic });
+        }
+      });
+    });
+
+    if (matchedTopics.length === 0) {
+      guideStepRenderBox.innerHTML = `
+        <div class="guide-step-view" style="text-align: center; padding: 48px;">
+          <div style="font-size: 32px; margin-bottom: 12px;">🔍</div>
+          <div style="font-size: 16px; font-weight: 700; color: #fff;">ไม่พบหัวข้อที่ตรงกับ "${query}"</div>
+          <div style="font-size: 13px; color: var(--text-secondary); margin-top: 6px;">ลองค้นหาด้วยคำอื่น เช่น "Google Flow", "ซับ", "Prompt", "CapCut", "เครดิต", "เสียง"</div>
+          <button class="btn btn-secondary" style="margin-top: 16px;" id="btn-clear-search">ล้างคำค้นหา</button>
+        </div>
+      `;
+      document.getElementById('btn-clear-search').addEventListener('click', () => {
+        guideSearchInput.value = '';
+        renderGuideCurrentStep();
+      });
+      return;
+    }
+
+    let topicsHtml = matchedTopics.map(({ step, topic }) => {
+      const stepsHtml = topic.steps.map(s => `
+        <div class="guide-step-item">
+          <span class="guide-step-item-bullet">›</span>
+          <span>${s}</span>
+        </div>
+      `).join('');
+
+      const proTipHtml = topic.proTip ? `
+        <div class="guide-callout tip">
+          <span style="font-size: 16px;">💡</span>
+          <div><strong>เคล็ดลับมือโปร:</strong> ${topic.proTip}</div>
+        </div>
+      ` : '';
+
+      const cautionHtml = topic.caution ? `
+        <div class="guide-callout caution">
+          <span style="font-size: 16px;">⚠️</span>
+          <div><strong>ข้อควรระวัง:</strong> ${topic.caution}</div>
+        </div>
+      ` : '';
+
+      return `
+        <div class="guide-topic-card open" id="${topic.id}">
+          <div class="guide-topic-header">
+            <div class="guide-topic-title">
+              <span>${step.icon} [${step.shortTitle}]</span>
+              <span>${topic.title}</span>
+            </div>
+            <div class="guide-topic-chevron">▼</div>
+          </div>
+          <div class="guide-topic-body" style="display: flex;">
+            <div class="guide-topic-desc">${topic.description}</div>
+            <div class="guide-steps-list">${stepsHtml}</div>
+            ${proTipHtml}
+            ${cautionHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    guideStepRenderBox.innerHTML = `
+      <div class="guide-step-view">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 14px;">
+          <div>
+            <h2 style="font-size: 17px; font-weight: 700; color: #fff;">
+              🔍 ผลการค้นหาสำหรับ "${query}"
+            </h2>
+            <div style="font-size: 12.5px; color: var(--accent-emerald); margin-top: 2px;">
+              พบทั้งหมด ${matchedTopics.length} หัวข้อย่อยที่เกี่ยวข้อง
+            </div>
+          </div>
+          <button class="btn btn-secondary" id="btn-back-to-step" style="font-size: 12px; padding: 6px 12px;">
+            ← กลับไปที่ขั้นตอนหลัก
+          </button>
+        </div>
+
+        <div class="guide-topics-list">
+          ${topicsHtml}
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-back-to-step').addEventListener('click', () => {
+      guideSearchInput.value = '';
+      renderGuideCurrentStep();
+    });
+
+    attachGuideInteractions();
+  }
+
+  function attachGuideInteractions() {
+    // Accordion Toggle
+    document.querySelectorAll('.guide-topic-header').forEach(hdr => {
+      hdr.addEventListener('click', () => {
+        const card = hdr.closest('.guide-topic-card');
+        card.classList.toggle('open');
+      });
+    });
+
+    // Step Nav buttons
+    const btnPrev = document.getElementById('btn-guide-prev-step');
+    const btnNext = document.getElementById('btn-guide-next-step');
+
+    if (btnPrev) {
+      btnPrev.addEventListener('click', () => {
+        if (activeGuideStepIndex > 0) {
+          activeGuideStepIndex--;
+          renderGuideStepper();
+          renderGuideCurrentStep();
+        }
+      });
+    }
+
+    if (btnNext) {
+      btnNext.addEventListener('click', () => {
+        if (activeGuideStepIndex < PRODUCTION_GUIDE.length - 1) {
+          activeGuideStepIndex++;
+          renderGuideStepper();
+          renderGuideCurrentStep();
+        }
+      });
+    }
+
+    // Snippet copy buttons
+    document.querySelectorAll('.guide-copy-snippet-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const snippet = decodeURIComponent(btn.dataset.snippet);
+        copyToClipboard(snippet, 'คัดลอกตัวอย่างคำสั่ง Prompt สำเร็จ!');
+      });
+    });
+
+    // Go-to-view buttons
+    document.querySelectorAll('.guide-goto-view-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetView = btn.dataset.targetView;
+        const navTarget = document.querySelector(`.nav-item[data-view="${targetView}"]`);
+        if (navTarget) {
+          navTarget.click();
+        }
+      });
+    });
+  }
+
   // Render All Views
   function renderAllViews() {
     renderStoryboard();
@@ -449,6 +827,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderBibleForm();
     renderChecklist();
     renderShotLog();
+    initGuideView();
   }
 
   // Initial Boot
