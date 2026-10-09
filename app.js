@@ -168,11 +168,24 @@ document.addEventListener('DOMContentLoaded', () => {
             ${shot.action}
           </div>
 
-          <button class="btn-copy-prompt" data-shot="${shot.id}" id="btn-copy-${shot.id}">
-            <span>📋 Copy Google Flow Prompt</span>
-          </button>
+          <div class="shot-action-btns">
+            <button class="btn-edit-shot" data-shot="${shot.id}" id="btn-edit-${shot.id}">
+              <span>✏️ แก้ไขช็อต</span>
+            </button>
+            <button class="btn-copy-prompt" data-shot="${shot.id}" id="btn-copy-${shot.id}">
+              <span>📋 Copy Prompt</span>
+            </button>
+          </div>
         </div>
       `;
+
+      // Edit Shot Button Event
+      const btnEdit = card.querySelector('.btn-edit-shot');
+      if (btnEdit) {
+        btnEdit.addEventListener('click', () => {
+          openEditShotModal(shot);
+        });
+      }
 
       // Copy Prompt Button Event
       const btnCopy = card.querySelector('.btn-copy-prompt');
@@ -182,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCopy.innerHTML = `<span>✓ Copied! พร้อมวางใน Flow</span>`;
         setTimeout(() => {
           btnCopy.classList.remove('copied');
-          btnCopy.innerHTML = `<span>📋 Copy Google Flow Prompt</span>`;
+          btnCopy.innerHTML = `<span>📋 Copy Prompt</span>`;
         }, 2000);
       });
 
@@ -215,6 +228,27 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('inspector-char-name').textContent = bible.name || 'ตัวละครหลัก';
     document.getElementById('inspector-char-appearance').textContent = bible.appearance || 'ไม่มีข้อมูล';
 
+    const charCodeMatch = (bible.name || '').match(/\(([A-Z0-9]+)\)/);
+    const charIdElem = document.getElementById('inspector-char-id');
+    if (charIdElem) {
+      charIdElem.textContent = charCodeMatch ? charCodeMatch[1] : 'E01';
+    }
+
+    const inspectorImg = document.getElementById('inspector-ref-img');
+    if (inspectorImg) {
+      if (currentProject.id === 'one-floor-below') {
+        inspectorImg.src = 'assets/hero.png';
+        inspectorImg.style.display = 'block';
+      } else {
+        inspectorImg.src = 'assets/hero.png';
+      }
+    }
+
+    const tagDuration = document.getElementById('tag-duration');
+    const tagShots = document.getElementById('tag-shots');
+    if (tagDuration) tagDuration.textContent = `${currentProject.durationSeconds || 48} วินาที`;
+    if (tagShots) tagShots.textContent = `${(currentProject.shots || []).length} ช็อต × ${currentProject.shotDurationSeconds || 8}s`;
+
     const continuityContainer = document.getElementById('inspector-continuity-list');
     continuityContainer.innerHTML = '';
     if (bible.continuityNotes) {
@@ -234,6 +268,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('brief-logline').value = currentProject.logline || '';
     document.getElementById('brief-setting').value = currentProject.setting || '';
     document.getElementById('brief-hook').value = currentProject.hook || '';
+
+    const btnDel = document.getElementById('btn-delete-project');
+    if (btnDel) {
+      btnDel.style.display = (currentProject.id === 'one-floor-below') ? 'none' : 'inline-flex';
+    }
   }
 
   // Save Brief Form
@@ -441,6 +480,318 @@ document.addEventListener('DOMContentLoaded', () => {
   videoModal.addEventListener('click', (e) => {
     if (e.target === videoModal) closeVideoModal();
   });
+
+  // ==========================================
+  // File System & Project Export / Import
+  // ==========================================
+
+  // Generic Download Helper
+  function downloadTextFile(filename, content, mimeType = 'text/plain;charset=utf-8') {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 200);
+  }
+
+  // 1. Save Project to .json file on computer
+  const btnSaveProjectFile = document.getElementById('btn-save-project-file');
+  if (btnSaveProjectFile) {
+    btnSaveProjectFile.addEventListener('click', () => {
+      if (!currentProject) {
+        showToast('ไม่มีโปรเจกต์ที่เปิดอยู่', '⚠️');
+        return;
+      }
+      const safeTitle = (currentProject.title || 'project')
+        .replace(/[^a-zA-Z0-9\u0E00-\u0E7F]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'project';
+      const filename = `${safeTitle}-project.json`;
+      const jsonStr = JSON.stringify(currentProject, null, 2);
+      downloadTextFile(filename, jsonStr, 'application/json');
+      showToast(`บันทึกไฟล์โปรเจกต์ "${filename}" ลงคอมพิวเตอร์แล้ว!`, '💾');
+    });
+  }
+
+  // 2. Open Project from .json file on computer
+  const btnOpenProjectFile = document.getElementById('btn-open-project-file');
+  const fileInputProject = document.getElementById('file-input-project');
+
+  if (btnOpenProjectFile && fileInputProject) {
+    btnOpenProjectFile.addEventListener('click', () => {
+      fileInputProject.click();
+    });
+
+    fileInputProject.addEventListener('change', (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (!imported || typeof imported !== 'object') {
+            throw new Error('รูปแบบไฟล์ JSON ไม่ถูกต้อง');
+          }
+          if (!imported.title && !imported.id && !imported.shots) {
+            throw new Error('โครงสร้างไฟล์ไม่ตรงกับโปรเจกต์ Western Short Film Studio');
+          }
+
+          // Generate or validate ID
+          if (!imported.id) {
+            imported.id = `proj-${Date.now().toString(36)}`;
+          }
+
+          // Check if project with same ID exists
+          const existingIdx = projects.findIndex(p => p.id === imported.id);
+          if (existingIdx >= 0) {
+            projects[existingIdx] = imported;
+          } else {
+            projects.push(imported);
+          }
+
+          activeProjectId = imported.id;
+          currentProject = imported;
+
+          saveState();
+          initProjectSelector();
+          renderAllViews();
+          showToast(`เปิดโปรเจกต์ "${imported.title || 'โปรเจกต์'}" สำเร็จ!`, '📂');
+        } catch (err) {
+          alert('ไม่สามารถเปิดไฟล์โปรเจกต์ได้: ' + err.message);
+          showToast('เปิดไฟล์ไม่สำเร็จ', '⚠️');
+        } finally {
+          event.target.value = '';
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  // 3. Export Prompts to .md file on computer
+  const btnExportMarkdown = document.getElementById('btn-export-markdown');
+  if (btnExportMarkdown) {
+    btnExportMarkdown.addEventListener('click', () => {
+      if (!currentProject) {
+        showToast('ไม่มีโปรเจกต์ที่เปิดอยู่', '⚠️');
+        return;
+      }
+      if (typeof generateProjectMarkdown !== 'function') {
+        showToast('ฟังก์ชันสร้าง Markdown ยังไม่พร้อมใช้งาน', '⚠️');
+        return;
+      }
+
+      const safeTitle = (currentProject.title || 'prompts')
+        .replace(/[^a-zA-Z0-9\u0E00-\u0E7F]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'prompts';
+      const filename = `${safeTitle}-prompts.md`;
+      const mdContent = generateProjectMarkdown(currentProject);
+      downloadTextFile(filename, mdContent, 'text/markdown;charset=utf-8');
+      showToast(`ส่งออกไฟล์ Markdown "${filename}" ลงคอมพิวเตอร์สำเร็จ!`, '📄');
+    });
+  }
+
+  // ==========================================
+  // Create New Project Modal Logic
+  // ==========================================
+  const btnOpenCreateModal = document.getElementById('btn-open-create-modal');
+  const newProjectModal = document.getElementById('new-project-modal');
+  const newProjectCloseBtn = document.getElementById('new-project-close-btn');
+  const btnCancelNewProject = document.getElementById('btn-cancel-new-project');
+  const newProjectForm = document.getElementById('new-project-form');
+
+  function openNewProjectModal() {
+    if (!newProjectModal) return;
+    newProjectForm.reset();
+    document.getElementById('np-title').value = '';
+    document.getElementById('np-genre').value = 'Psychological Suspense / ระทึกขวัญ';
+    document.getElementById('np-logline').value = '';
+    document.getElementById('np-setting').value = '';
+    document.getElementById('np-char-name').value = 'Cole Walker (C01)';
+    document.getElementById('np-char-age').value = '32 ปี';
+    document.getElementById('np-char-appearance').value = 'ผิวสองสี ผมสั้นสีดำ เสื้อแจ็กเก็ตยีนส์สีเข้ม สเวตเตอร์คอเต่าสีเทา แววตามุ่งมั่น';
+    document.getElementById('np-char-voice').value = 'เสียงผู้ใหญ่พูดไทยมาตรฐาน ระดับกลาง ชัดถ้อยชัดคำ ไม่ออกเสียงอังกฤษ';
+    newProjectModal.classList.add('open');
+    setTimeout(() => {
+      document.getElementById('np-title').focus();
+    }, 100);
+  }
+
+  function closeNewProjectModal() {
+    if (newProjectModal) newProjectModal.classList.remove('open');
+  }
+
+  if (btnOpenCreateModal) btnOpenCreateModal.addEventListener('click', openNewProjectModal);
+  if (newProjectCloseBtn) newProjectCloseBtn.addEventListener('click', closeNewProjectModal);
+  if (btnCancelNewProject) btnCancelNewProject.addEventListener('click', closeNewProjectModal);
+  if (newProjectModal) {
+    newProjectModal.addEventListener('click', (e) => {
+      if (e.target === newProjectModal) closeNewProjectModal();
+    });
+  }
+
+  if (newProjectForm) {
+    newProjectForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('np-title').value.trim();
+      const genre = document.getElementById('np-genre').value.trim();
+      const logline = document.getElementById('np-logline').value.trim();
+      const setting = document.getElementById('np-setting').value.trim();
+      const charName = document.getElementById('np-char-name').value.trim();
+      const charAge = document.getElementById('np-char-age').value.trim();
+      const charAppearance = document.getElementById('np-char-appearance').value.trim();
+      const charVoice = document.getElementById('np-char-voice').value.trim();
+
+      if (!title) {
+        alert('กรุณาระบุชื่อเรื่อง');
+        return;
+      }
+
+      if (typeof createNewProjectTemplate !== 'function') {
+        showToast('ฟังก์ชันสร้างโปรเจกต์ไม่พร้อมใช้งาน', '⚠️');
+        return;
+      }
+
+      const newProj = createNewProjectTemplate({
+        title,
+        genre,
+        logline,
+        setting,
+        charName,
+        charAge,
+        charAppearance,
+        charVoice
+      });
+
+      projects.push(newProj);
+      activeProjectId = newProj.id;
+      currentProject = newProj;
+
+      saveState();
+      initProjectSelector();
+      renderAllViews();
+      closeNewProjectModal();
+      showToast(`สร้างโปรเจกต์ใหม่ "${newProj.title}" สำเร็จแล้ว!`, '✨');
+    });
+  }
+
+  // ==========================================
+  // Edit Shot Modal Logic
+  // ==========================================
+  const editShotModal = document.getElementById('edit-shot-modal');
+  const editShotCloseBtn = document.getElementById('edit-shot-close-btn');
+  const btnCancelEditShot = document.getElementById('btn-cancel-edit-shot');
+  const editShotForm = document.getElementById('edit-shot-form');
+  const btnAutoComposePrompt = document.getElementById('btn-auto-compose-prompt');
+
+  let activeEditingShot = null;
+
+  function openEditShotModal(shot) {
+    activeEditingShot = shot;
+    document.getElementById('edit-shot-modal-title').textContent = `✏️ แก้ไขข้อมูลช็อต ${shot.id} (${shot.timecode})`;
+    document.getElementById('es-shot-id').value = shot.id;
+    document.getElementById('es-timecode').value = `${shot.id} • ${shot.timecode} (8 วินาที • 9:16)`;
+    document.getElementById('es-angle').value = shot.angle || 'Medium Shot';
+    document.getElementById('es-dialogue').value = shot.dialogue || '';
+    document.getElementById('es-action').value = shot.action || '';
+    document.getElementById('es-audio').value = shot.audioNotes || '';
+    document.getElementById('es-prompt').value = shot.prompt || '';
+
+    editShotModal.classList.add('open');
+    setTimeout(() => {
+      document.getElementById('es-dialogue').focus();
+    }, 100);
+  }
+
+  function closeEditShotModal() {
+    if (editShotModal) editShotModal.classList.remove('open');
+    activeEditingShot = null;
+  }
+
+  if (editShotCloseBtn) editShotCloseBtn.addEventListener('click', closeEditShotModal);
+  if (btnCancelEditShot) btnCancelEditShot.addEventListener('click', closeEditShotModal);
+  if (editShotModal) {
+    editShotModal.addEventListener('click', (e) => {
+      if (e.target === editShotModal) closeEditShotModal();
+    });
+  }
+
+  // Auto Compose Shot Prompt Helper
+  if (btnAutoComposePrompt) {
+    btnAutoComposePrompt.addEventListener('click', () => {
+      if (!activeEditingShot) return;
+      const bible = currentProject.characterBible || {};
+      const angle = document.getElementById('es-angle').value;
+      const dialogue = document.getElementById('es-dialogue').value.trim();
+      const action = document.getElementById('es-action').value.trim();
+      const audio = document.getElementById('es-audio').value.trim();
+
+      const charName = bible.name || 'Protagonist';
+      const cleanChar = charName.replace(/\s*\([A-Z0-9]+\)\s*/, '').trim();
+      const charCodeMatch = charName.match(/\(([A-Z0-9]+)\)/);
+      const charCode = charCodeMatch ? charCodeMatch[1] : 'C01';
+
+      const composedPrompt = `Shot ${activeEditingShot.id}. Vertical 9:16, 8-second photorealistic cinematic shot.
+${cleanChar}, ${bible.age || 'adult'}, ${bible.appearance || 'photorealistic appearance'}.
+Setting: ${currentProject.setting || 'Cinematic location, atmospheric cinematic lighting'}.
+Use the approved ${charCode} character and L01 scene references when supported by the selected mode.
+${angle}. ${action || 'Natural cinematic motion and restrained suspense expression.'}
+Only ${cleanChar} speaks, in Thai with natural standard Central Thai pronunciation, saying exactly: "${dialogue || '...'}"
+Audio: ${audio || 'Natural ambient sound with clear dialogue. One speaker only, no English dialogue, no music unless specified.'}
+No subtitles, no captions, no logos or readable text. Maintain face, hairstyle, and outfit across all shots.`;
+
+      document.getElementById('es-prompt').value = composedPrompt;
+      showToast('ร่างคำสั่ง Prompt อัตโนมัติเรียบร้อย!', '⚡');
+    });
+  }
+
+  if (editShotForm) {
+    editShotForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!activeEditingShot) return;
+
+      activeEditingShot.angle = document.getElementById('es-angle').value;
+      activeEditingShot.dialogue = document.getElementById('es-dialogue').value.trim();
+      activeEditingShot.action = document.getElementById('es-action').value.trim();
+      activeEditingShot.audioNotes = document.getElementById('es-audio').value.trim();
+      activeEditingShot.prompt = document.getElementById('es-prompt').value.trim();
+
+      saveState();
+      renderStoryboard();
+      renderShotLog();
+      closeEditShotModal();
+      showToast(`บันทึกการแก้ไขช็อต ${activeEditingShot.id} สำเร็จ!`, '✓');
+    });
+  }
+
+  // Delete Project Action
+  const btnDeleteProject = document.getElementById('btn-delete-project');
+  if (btnDeleteProject) {
+    btnDeleteProject.addEventListener('click', () => {
+      if (currentProject.id === 'one-floor-below') {
+        alert('โปรเจกต์ "One Floor Below" เป็นโปรเจกต์ตัวอย่างมาตรฐานของคิท ไม่สามารถลบได้');
+        return;
+      }
+      if (confirm(`คุณต้องการลบโปรเจกต์ "${currentProject.title}" ใช่หรือไม่?`)) {
+        const deletedTitle = currentProject.title;
+        projects = projects.filter(p => p.id !== currentProject.id);
+        if (projects.length === 0) {
+          projects = DEFAULT_PROJECTS;
+        }
+        activeProjectId = projects[0].id;
+        currentProject = projects[0];
+        saveState();
+        initProjectSelector();
+        renderAllViews();
+        showToast(`ลบโปรเจกต์ "${deletedTitle}" เรียบร้อยแล้ว`, '🗑️');
+      }
+    });
+  }
 
   // ==========================================
   // Interactive Production Guide & Flow Hub

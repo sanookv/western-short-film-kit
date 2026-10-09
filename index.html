@@ -61,9 +61,12 @@
       <!-- Topbar -->
       <header class="topbar">
         <div class="project-selector-wrapper">
-          <select id="project-select" class="project-select">
+          <select id="project-select" class="project-select" title="เลือกโปรเจกต์ที่ต้องการทำงาน">
             <!-- Populated via JavaScript -->
           </select>
+          <button class="btn btn-primary btn-sm" id="btn-open-create-modal" title="สร้างโปรเจกต์หนังสั้น AI เรื่องใหม่">
+            <span>✨ สร้างโปรเจกต์ใหม่</span>
+          </button>
           <div class="project-tags">
             <span class="tag tag-amber" id="tag-aspect">9:16 Vertical</span>
             <span class="tag" id="tag-duration">48 วินาที</span>
@@ -72,12 +75,31 @@
         </div>
 
         <div class="topbar-actions">
-          <button class="btn btn-secondary" id="btn-play-demo">
-            <span>▶ ดูคลิปตัวอย่างจริง</span>
-          </button>
-          <button class="btn btn-primary" id="btn-copy-all-prompts">
-            <span>📋 คัดลอก Prompt ครบ 6 ช็อต</span>
-          </button>
+          <!-- File Operations -->
+          <div class="topbar-btn-group">
+            <button class="btn btn-secondary" id="btn-open-project-file" title="เปิดไฟล์โปรเจกต์ (.json) จากคอมพิวเตอร์">
+              <span>📂 เปิดโปรเจกต์</span>
+            </button>
+            <input type="file" id="file-input-project" accept=".json,application/json" style="display: none;">
+
+            <button class="btn btn-secondary" id="btn-save-project-file" title="บันทึกโปรเจกต์เป็นไฟล์ .json ลงคอมพิวเตอร์">
+              <span>💾 บันทึกโปรเจกต์ (.json)</span>
+            </button>
+
+            <button class="btn btn-amber-glow" id="btn-export-markdown" title="ส่งออกชุด Prompt ทั้งหมดเป็นไฟล์ .md บันทึกลงคอมพิวเตอร์">
+              <span>📄 ส่งออก Prompt (.md)</span>
+            </button>
+          </div>
+
+          <!-- Preview & Quick Actions -->
+          <div class="topbar-btn-group">
+            <button class="btn btn-secondary" id="btn-play-demo" title="ดูคลิปตัวอย่างจริงที่สร้างจาก Google Flow">
+              <span>▶ ดูตัวอย่างจริง</span>
+            </button>
+            <button class="btn btn-primary" id="btn-copy-all-prompts" title="คัดลอก Prompt ครบทั้ง 6 ช็อต">
+              <span>📋 คัดลอกทั้ง 6 ช็อต</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -135,7 +157,10 @@
             <h1 class="view-title">Project Brief & Concept</h1>
             <p class="view-subtitle">กำหนดพล็อตเรื่อง โครงสร้าง Hook และจุดหักมุมสำหรับสร้างหนังสั้น 9:16</p>
           </div>
-          <button class="btn btn-primary" id="btn-save-brief">💾 บันทึกบรีฟ</button>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-secondary" id="btn-delete-project" style="color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);">🗑️ ลบโปรเจกต์นี้</button>
+            <button class="btn btn-primary" id="btn-save-brief">💾 บันทึกบรีฟ</button>
+          </div>
         </div>
 
         <div class="form-card">
@@ -397,6 +422,141 @@
         <div style="margin-top: 14px; font-size: 12px; color: var(--text-secondary); text-align: center; line-height: 1.4;">
           คลิปทดลองจริงจาก Google Flow • Ella พูดไทย: “ฉันจำทำนองนั้นได้” • 9:16 • 8 วินาที
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Create New Project -->
+  <div class="modal-overlay" id="new-project-modal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <div class="modal-title">✨ สร้างโปรเจกต์หนังสั้น AI เรื่องใหม่ (9:16 Vertical)</div>
+        <button class="modal-close" id="new-project-close-btn">&times;</button>
+      </div>
+      <div class="modal-body modal-scrollable">
+        <form id="new-project-form" style="width: 100%;">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label">ชื่อเรื่อง (Project Title) <span class="req">*</span></label>
+              <input type="text" id="np-title" class="form-input" placeholder="เช่น The Silent Echo — เสียงเงียบในเหมืองร้าง" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">แนวเรื่อง (Genre) <span class="req">*</span></label>
+              <input type="text" id="np-genre" class="form-input" placeholder="เช่น Psychological Suspense / ระทึกขวัญ" value="Suspense / ระทึกขวัญ" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">สเปกมาตรฐาน</label>
+              <input type="text" class="form-input" value="48 วินาที • 6 ช็อต × 8s • 9:16 Vertical" readonly style="opacity: 0.85;">
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Logline / เรื่องย่อใน 1 บรรทัด <span class="req">*</span></label>
+              <textarea id="np-logline" class="form-textarea" placeholder="เรื่องย่อสั้นๆ ดึงดูดความสนใจ สรุปแก่นของเรื่องในประโยคเดียว" required style="min-height: 60px;"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">สถานที่และบรรยากาศหลัก (Setting & Atmosphere)</label>
+              <textarea id="np-setting" class="form-textarea" placeholder="เช่น ลิฟต์อพาร์ตเมนต์เก่าใน Chicago ตอนกลางคืน แสงสลัว โทนเย็น" style="min-height: 60px;"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <div style="font-size: 13px; font-weight: 700; color: var(--accent-amber); margin-top: 6px; margin-bottom: 2px;">
+                🎭 ข้อมูลตัวละครหลัก (Character Reference Bible)
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">ชื่อและรหัสตัวละคร (เช่น Cole Walker (C01))</label>
+              <input type="text" id="np-char-name" class="form-input" placeholder="Cole Walker (C01)" value="Cole Walker (C01)">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">อายุตัวละคร</label>
+              <input type="text" id="np-char-age" class="form-input" placeholder="32 ปี" value="32 ปี">
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">รูปลักษณ์ เสื้อผ้า ทรงผม (Appearance & Outfit - ล็อกให้คงที่ทุกช็อต)</label>
+              <textarea id="np-char-appearance" class="form-textarea" placeholder="เช่น ผิวสองสี ผมสั้นสีดำ เสื้อแจ็กเก็ตยีนส์สีเข้ม สเวตเตอร์คอเต่าสีเทา แววตามุ่งมั่น" style="min-height: 60px;"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">ลักษณะเสียง (ต้องพูดภาษาไทยมาตรฐาน)</label>
+              <input type="text" id="np-char-voice" class="form-input" placeholder="เสียงชายวัยทำงาน พูดไทยมาตรฐาน ทุ้มนุ่ม ชัดถ้อยชัดคำ" value="เสียงผู้ใหญ่พูดไทยมาตรฐาน ระดับกลาง ชัดถ้อยชัดคำ ไม่ออกเสียงอังกฤษ">
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+            <button type="button" class="btn btn-secondary" id="btn-cancel-new-project">ยกเลิก</button>
+            <button type="submit" class="btn btn-primary" id="btn-submit-new-project">🚀 สร้างโปรเจกต์ 6 ช็อตทันที</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Edit Shot -->
+  <div class="modal-overlay" id="edit-shot-modal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <div class="modal-title" id="edit-shot-modal-title">✏️ แก้ไขข้อมูลช็อต (Edit Shot)</div>
+        <button class="modal-close" id="edit-shot-close-btn">&times;</button>
+      </div>
+      <div class="modal-body modal-scrollable">
+        <form id="edit-shot-form" style="width: 100%;">
+          <input type="hidden" id="es-shot-id">
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">รหัสช็อต & Timecode</label>
+              <input type="text" id="es-timecode" class="form-input" readonly style="opacity: 0.85; font-family: var(--font-mono);">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">มุมกล้อง (Camera Angle)</label>
+              <select id="es-angle" class="form-select">
+                <option value="Medium Shot">Medium Shot (ระยะกลาง)</option>
+                <option value="Medium Close-Up">Medium Close-Up (ครึ่งตัวบน)</option>
+                <option value="Close-Up">Close-Up (ใบหน้าชัดเจน)</option>
+                <option value="Extreme Close-Up">Extreme Close-Up (เจาะรายละเอียด)</option>
+                <option value="Over-The-Shoulder">Over-The-Shoulder (ข้ามไหล่)</option>
+                <option value="Medium Profile">Medium Profile (ด้านข้าง)</option>
+                <option value="Medium Low-Angle">Medium Low-Angle (มุมเงยปานกลาง)</option>
+                <option value="Wide Shot">Wide Shot (มุมกว้าง 9:16)</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">🗣️ บทพูดภาษาไทย (ตรงตัว — ห้ามแปลเป็นอังกฤษ) <span class="req">*</span></label>
+              <input type="text" id="es-dialogue" class="form-input" placeholder="เช่น ฉันจำทำนองนั้นได้" required>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">เหตุการณ์ / การกระทำในช็อต (Action Description) <span class="req">*</span></label>
+              <textarea id="es-action" class="form-textarea" placeholder="อธิบายสิ่งที่ตัวละครทำ การเคลื่อนไหวของกล้อง และการเปิดเผยข้อมูลในช็อตนี้" required style="min-height: 70px;"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">สภาพเสียง / บรรยากาศ (Audio Notes)</label>
+              <input type="text" id="es-audio" class="form-input" placeholder="เช่น เสียงหึ่งของลิฟต์ เสียงผิวปาก 3 โน้ตเบาๆ ไม่มีดนตรีประกอบ">
+            </div>
+
+            <div class="form-group full-width">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label class="form-label">Prompt ตัวเต็มสำหรับ Google Flow (Veo Studio) <span class="req">*</span></label>
+                <button type="button" class="btn btn-secondary" id="btn-auto-compose-prompt" style="padding: 3px 10px; font-size: 11px;">⚡ ร่าง Prompt อัตโนมัติ</button>
+              </div>
+              <textarea id="es-prompt" class="form-textarea" style="min-height: 140px; font-family: var(--font-mono); font-size: 12px; line-height: 1.4;" required></textarea>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+            <button type="button" class="btn btn-secondary" id="btn-cancel-edit-shot">ยกเลิก</button>
+            <button type="submit" class="btn btn-primary" id="btn-submit-edit-shot">💾 บันทึกการแก้ไขช็อต</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

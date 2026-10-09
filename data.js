@@ -636,3 +636,242 @@ No subtitles, no captions, no logos or readable text. Maintain her face, age and
     ]
   }
 ];
+
+// Helper: Create a brand new 6-shot project template
+function createNewProjectTemplate({
+  title = 'Untitled Project',
+  genre = 'Drama / Suspense',
+  logline = '',
+  setting = '',
+  hook = '',
+  charName = 'Protagonist (P01)',
+  charAge = '30 ปี',
+  charAppearance = 'ลักษณะภายนอก เสื้อผ้า ทรงผม ที่ต้องคงที่ทุกช็อต',
+  charVoice = 'เสียงพูดภาษาไทยมาตรฐาน ชัดเจน เป็นธรรมชาติ'
+} = {}) {
+  const slug = title.toLowerCase().replace(/[^a-z0-9\u0E00-\u0E7F]+/g, '-').replace(/(^-|-$)/g, '') || `proj-${Date.now()}`;
+  const projectId = `${slug}-${Date.now().toString(36)}`;
+
+  const charCodeMatch = charName.match(/\(([A-Z0-9]+)\)/);
+  const charCode = charCodeMatch ? charCodeMatch[1] : 'C01';
+  const cleanCharName = charName.replace(/\s*\([A-Z0-9]+\)\s*/, '').trim() || 'ตัวละครหลัก';
+
+  const defaultShots = [
+    {
+      id: 'S01',
+      timecode: '00:00–00:08',
+      duration: 8,
+      angle: 'Medium Shot',
+      status: 'Ready to Gen',
+      action: `${cleanCharName} ปรากฏตัวใน ${setting || 'ฉากหลัก'} เริ่มต้นเหตุการณ์แรก`,
+      dialogue: 'มีใครอยู่ที่นี่ไหม',
+      audioNotes: 'เสียงบรรยากาศโดยรอบเงียบสงัด ค่อยๆ มีเสียงประกอบแผ่วเบา',
+      prompt: `Shot S01. Vertical 9:16, 8-second photorealistic cinematic shot.
+${cleanCharName}, ${charAge}, ${charAppearance}.
+Setting: ${setting || 'Cinematic interior/exterior location at night, cinematic mood lighting'}.
+Use the approved ${charCode} character and L01 scene references.
+A steady medium shot. ${cleanCharName} enters the frame and looks around carefully.
+Only ${cleanCharName} speaks, in Thai with natural standard Central Thai pronunciation, saying exactly: "มีใครอยู่ที่นี่ไหม"
+Audio: Ambient environmental tone with subtle realistic sound effects. One speaker only, no English dialogue, no music unless specified.
+No subtitles, no captions, no logos or readable text. Maintain facial likeness, hairstyle, and outfit.`
+    },
+    {
+      id: 'S02',
+      timecode: '00:08–00:16',
+      duration: 8,
+      angle: 'Close-Up',
+      status: 'Ready to Gen',
+      action: `${cleanCharName} สังเกตเห็นสิ่งผิดปกติบางอย่าง สีหน้าเริ่มเปลี่ยนไป`,
+      dialogue: 'นั่นมันอะไรกัน',
+      audioNotes: 'เสียงเอฟเฟกต์เฉพาะจุดที่ดึงดูดความสนใจ',
+      prompt: `Shot S02. Vertical 9:16, 8-second photorealistic cinematic shot.
+${cleanCharName}, ${charAge}, ${charAppearance}.
+Setting: ${setting || 'Cinematic interior/exterior location at night, cinematic mood lighting'}.
+Use the approved ${charCode} character and L01 scene references.
+Close-up on ${cleanCharName}'s face reacting with curiosity and slight tension.
+Only ${cleanCharName} speaks, in Thai with natural standard Central Thai pronunciation, saying exactly: "นั่นมันอะไรกัน"
+Audio: Focus on breathing and a subtle tense sound design cue. One speaker only, no English dialogue.
+No subtitles, no captions, no logos or readable text. Maintain facial likeness, hairstyle, and outfit.`
+    },
+    {
+      id: 'S03',
+      timecode: '00:16–00:24',
+      duration: 8,
+      angle: 'Medium Profile',
+      status: 'Ready to Gen',
+      action: `${cleanCharName} ก้าวเข้าไปใกล้จุดเกิดเหตุ พยายามค้นหาคำตอบ`,
+      dialogue: 'ฉันไม่เคยเห็นที่นี่มาก่อน',
+      audioNotes: 'เสียงฝีเท้าเบาๆ กระทบพื้น และเสียงลมพัดผ่าน',
+      prompt: `Shot S03. Vertical 9:16, 8-second photorealistic cinematic shot.
+${cleanCharName}, ${charAge}, ${charAppearance}.
+Setting: ${setting || 'Cinematic interior/exterior location at night, cinematic mood lighting'}.
+Use the approved ${charCode} character and L01 scene references.
+Medium profile angle following ${cleanCharName} stepping forward cautiously.
+Only ${cleanCharName} speaks, in Thai with natural standard Central Thai pronunciation, saying exactly: "ฉันไม่เคยเห็นที่นี่มาก่อน"
+Audio: Footsteps and eerie ambient reverberation. One speaker only, no English dialogue.
+No subtitles, no captions, no logos or readable text. Maintain facial likeness, hairstyle, and outfit.`
+    },
+    {
+      id: 'S04',
+      timecode: '00:24–00:32',
+      duration: 8,
+      angle: 'Over-The-Shoulder',
+      status: 'Ready to Gen',
+      action: `มุมมองข้ามไหล่ เผยให้เห็นวัตถุหรือหลักฐานชิ้นสำคัญที่เชื่อมโยงกับปมเรื่อง`,
+      dialogue: 'มันเริ่มขึ้นแล้วใช่ไหม',
+      audioNotes: 'เสียงบรรยากาศหยุดชะงักชั่วครู่ เกิดความเงียบตึงเครียด',
+      prompt: `Shot S04. Vertical 9:16, 8-second photorealistic cinematic shot.
+${cleanCharName}, ${charAge}, ${charAppearance}.
+Setting: ${setting || 'Cinematic interior/exterior location at night, cinematic mood lighting'}.
+Use the approved ${charCode} character and L01 scene references.
+Over-the-shoulder angle framing ${cleanCharName} and revealing the mystery element ahead.
+Only ${cleanCharName} speaks, in Thai with natural standard Central Thai pronunciation, saying exactly: "มันเริ่มขึ้นแล้วใช่ไหม"
+Audio: Sudden quiet room tone intensifying the suspense. One speaker only, no English dialogue.
+No subtitles, no captions, no logos or readable text. Maintain facial likeness, hairstyle, and outfit.`
+    },
+    {
+      id: 'S05',
+      timecode: '00:32–00:40',
+      duration: 8,
+      angle: 'Medium Close-Up',
+      status: 'Ready to Gen',
+      action: `${cleanCharName} เผชิญหน้ากับความจริงหรือการตัดสินใจที่ไม่อาจหลีกเลี่ยงได้`,
+      dialogue: 'ฉันต้องรู้ความจริงให้ได้',
+      audioNotes: 'เสียงหัวใจเต้น หรือเสียงเครื่องยนต์/เสียงกลไกแผ่วเบา',
+      prompt: `Shot S05. Vertical 9:16, 8-second photorealistic cinematic shot.
+${cleanCharName}, ${charAge}, ${charAppearance}.
+Setting: ${setting || 'Cinematic interior/exterior location at night, cinematic mood lighting'}.
+Use the approved ${charCode} character and L01 scene references.
+Static medium close-up capturing high emotional stakes and determined expression.
+Only ${cleanCharName} speaks, in Thai with natural standard Central Thai pronunciation, saying exactly: "ฉันต้องรู้ความจริงให้ได้"
+Audio: Low bass drone and faint heartbeat sound design. One speaker only, no English dialogue.
+No subtitles, no captions, no logos or readable text. Maintain facial likeness, hairstyle, and outfit.`
+    },
+    {
+      id: 'S06',
+      timecode: '00:40–00:48',
+      duration: 8,
+      angle: 'Wide Shot / Climax',
+      status: 'Ready to Gen',
+      action: `จุดหักมุมสุดท้าย (Twist Ending) ทิ้งความลึกลับหรือคำถามให้ผู้ชมคิดต่อ`,
+      dialogue: 'หรือทั้งหมดนี้... ฉันคิดไปเอง',
+      audioNotes: 'เสียงแอมเบียนต์สะท้อนกังวาน และค่อยๆ เฟดดับก่อนจบคลิป',
+      prompt: `Shot S06. Vertical 9:16, 8-second photorealistic cinematic shot.
+${cleanCharName}, ${charAge}, ${charAppearance}.
+Setting: ${setting || 'Cinematic interior/exterior location at night, cinematic mood lighting'}.
+Use the approved ${charCode} character and L01 scene references.
+Wide shot establishing the final twist or haunting revelation in 9:16 vertical framing.
+Only ${cleanCharName} speaks, in Thai with natural standard Central Thai pronunciation, saying exactly: "หรือทั้งหมดนี้... ฉันคิดไปเอง"
+Audio: Echoing atmosphere slowly cutting to dead silence at the final second. One speaker only, no English dialogue.
+No subtitles, no captions, no logos or readable text. Maintain facial likeness, hairstyle, and outfit.`
+    }
+  ];
+
+  return {
+    id: projectId,
+    title,
+    genre,
+    aspectRatio: '9:16',
+    durationSeconds: 48,
+    totalShots: 6,
+    shotDurationSeconds: 8,
+    status: 'In Production',
+    logline: logline || 'เรื่องย่อสั้น 1 บรรทัดสำหรับหนังสั้น 9:16',
+    setting: setting || 'สถานที่หลักและบรรยากาศเรื่อง',
+    hook: hook || 'Hook เปิดเรื่อง → เหตุการณ์แปลก → ปมทวีความตื่นเต้น → จุดหักมุมตอนจบ',
+    characterBible: {
+      name: `${cleanCharName} (${charCode})`,
+      age: charAge,
+      appearance: charAppearance,
+      voice: charVoice,
+      referencePrompt: `Create a photorealistic full-body character reference on a plain neutral background. ${cleanCharName}, an original adult character (${charAge}), ${charAppearance}. Natural proportions, hands visible and empty, calm neutral expression, soft even light. One person only. No actor likeness, no text, no logo.`,
+      sceneReferencePrompt: `Vertical 9:16 photorealistic scene reference. ${setting || 'Cinematic atmospheric location'}. Photorealistic lighting, restrained contemporary film look. No people, no text or logos.`,
+      propReferencePrompt: `Photorealistic reference of key prop on a plain neutral background. Soft even light. No hands, no person, no extra objects, no text or logos.`,
+      continuityNotes: [
+        `${cleanCharName} รักษาใบหน้า เสื้อผ้า และทรงผมให้ตรงตาม ${charCode} ตลอดทั้ง 6 ช็อต`,
+        `ไม่มีบุคคลที่สองในเฟรมภาพเว้นแต่มีระบุในบรีฟอย่างชัดเจน`,
+        `รักษาความต่อเนื่องของสภาพแสงและสถานที่ตลอดเวลา 48 วินาที`,
+        `บทพูดภาษาไทยตรงตัว ห้ามแปลเป็นภาษาอังกฤษ`
+      ]
+    },
+    shots: defaultShots
+  };
+}
+
+// Helper: Generate complete Markdown export for a project
+function generateProjectMarkdown(project) {
+  const bible = project.characterBible || {};
+  const shots = project.shots || [];
+
+  let md = `# ${project.title || 'Untitled Project'} — AI Cinema 9:16 Prompts\n\n`;
+  md += `> **ชุดคำสั่งและเอกสารการผลิตหนังสั้น AI แนวตั้ง (Western Short Film Kit)**\n`;
+  md += `> **แนวเรื่อง (Genre):** ${project.genre || 'Drama'}\n`;
+  md += `> **สัดส่วนภาพ (Aspect Ratio):** ${project.aspectRatio || '9:16'} Vertical\n`;
+  md += `> **ความยาวรวม (Duration):** ${project.durationSeconds || 48} วินาที (${project.totalShots || 6} ช็อต × ${project.shotDurationSeconds || 8} วินาที)\n`;
+  md += `> **ภาษาบทพูด (Spoken Language):** ภาษาไทยมาตรฐาน (Standard Central Thai)\n`;
+  md += `> **สถานะโปรเจกต์:** ${project.status || 'In Production'}\n\n`;
+  md += `---\n\n`;
+
+  md += `## 1. ข้อมูลบรีฟและพล็อตเรื่อง (Project Brief)\n\n`;
+  md += `* **ชื่อเรื่อง:** ${project.title || '-'}\n`;
+  md += `* **Logline:** ${project.logline || '-'}\n`;
+  md += `* **สถานที่และบรรยากาศ (Setting):** ${project.setting || '-'}\n`;
+  md += `* **โครงสร้าง Hook & จุดหักมุม:** ${project.hook || '-'}\n\n`;
+  md += `---\n\n`;
+
+  md += `## 2. ข้อมูลตัวละครและภาพอ้างอิง (Character & Reference Bibles)\n\n`;
+  md += `### ตัวละครหลัก: ${bible.name || 'ตัวละครหลัก'}\n`;
+  md += `* **อายุ:** ${bible.age || '-'}\n`;
+  md += `* **รูปลักษณ์ภายนอก:** ${bible.appearance || '-'}\n`;
+  md += `* **ลักษณะเสียง:** ${bible.voice || '-'}\n\n`;
+
+  md += `#### Character Reference Prompt (${bible.name || 'ตัวละคร'})\n`;
+  md += `\`\`\`text\n${bible.referencePrompt || 'No character prompt specified.'}\n\`\`\`\n\n`;
+
+  md += `#### Scene Reference Prompt (L01 — 9:16)\n`;
+  md += `\`\`\`text\n${bible.sceneReferencePrompt || 'No scene prompt specified.'}\n\`\`\`\n\n`;
+
+  md += `#### Prop Reference Prompt (P01)\n`;
+  md += `\`\`\`text\n${bible.propReferencePrompt || 'No prop prompt specified.'}\n\`\`\`\n\n`;
+
+  if (bible.continuityNotes && bible.continuityNotes.length > 0) {
+    md += `#### 🔒 กฎความต่อเนื่อง (Continuity Rules)\n`;
+    bible.continuityNotes.forEach(note => {
+      md += `* ${note}\n`;
+    });
+    md += `\n`;
+  }
+  md += `---\n\n`;
+
+  md += `## 3. ตาราง Storyboard & บทพูดภาษาไทย (Storyboard Breakdown)\n\n`;
+  md += `| ช็อต | Timecode | มุมกล้อง | บทพูดภาษาไทย (ตรงตัว) | สถานะ |\n`;
+  md += `| :--- | :--- | :--- | :--- | :--- |\n`;
+  shots.forEach(s => {
+    md += `| **${s.id}** | ${s.timecode} | ${s.angle || '-'} | “${s.dialogue || ''}” | ${s.status || '-'} |\n`;
+  });
+  md += `\n---\n\n`;
+
+  md += `## 4. ชุดคำสั่งพร้อมสร้างวิดีโอ (Google Flow / Veo Prompts ครบทั้ง 6 ช็อต)\n\n`;
+  shots.forEach(s => {
+    md += `### ${s.id} · ${s.timecode} (${s.angle || 'Cinematic'})\n\n`;
+    md += `* **เหตุการณ์/การกระทำ:** ${s.action || '-'}\n`;
+    md += `* **บทพูดภาษาไทย:** “${s.dialogue || ''}”\n`;
+    md += `* **เสียงประกอบ:** ${s.audioNotes || '-'}\n\n`;
+    md += `**Copy-Ready Prompt สำหรับใส่ใน Google Flow:**\n`;
+    md += `\`\`\`text\n${s.prompt || ''}\n\`\`\`\n\n`;
+  });
+
+  md += `---\n\n`;
+  md += `## 5. เกณฑ์ตรวจสอบคุณภาพ (QC Checklist)\n\n`;
+  md += `1. [ ] สัดส่วนภาพเป็น 9:16 Vertical แท้ ไม่ถูกยืดหรือครอปผิดสัดส่วน\n`;
+  md += `2. [ ] ความยาวแต่ละช็อตตรงตามเวลาที่กำหนด (8 วินาทีต่อช็อต รวม 48 วินาที)\n`;
+  md += `3. [ ] หน้าตา เสื้อผ้า และทรงผมของตัวละครตรงตาม Character Reference Bible\n`;
+  md += `4. [ ] ตัวละครพูดภาษาไทยมาตรฐานชัดเจน ไม่ออกเสียงเป็นภาษาอังกฤษหรือภาษาอื่น\n`;
+  md += `5. [ ] ปากขยับตรงกับคำพูด (Lip-sync alignment)\n`;
+  md += `6. [ ] ไม่มีตัวละครส่วนเกิน หรืออวัยวะผิดรูปผิดส่วน\n`;
+  md += `7. [ ] โทนแสงและสีของฉากสอดคล้องต่อเนื่องกันทุกช็อต\n`;
+  md += `8. [ ] อารมณ์และจังหวะของเสียงประกอบสอดรับกับภาพและจุดหักมุม\n\n`;
+  md += `*สร้างโดย Western Short Film Studio • Google Flow (Veo Studio) Workflow*\n`;
+
+  return md;
+}
